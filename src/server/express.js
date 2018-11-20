@@ -2,23 +2,27 @@ import express from "express"
 const server = express()
 import path from "path"
 
-const webpack = require("webpack")
-const config = require("../../config/webpack.dev.js")
-const compiler = webpack(config)
+const isProd = process.env.NODE_ENV === "production";
 
-const webpackDevMiddleware = require("webpack-dev-middleware")(
-  compiler,
-  config.devServer
-)
+if (!isProd) {
+  const webpack = require("webpack")
+  const config = require("../../config/webpack.dev.js")
+  const compiler = webpack(config)
 
-const webpackHotMiddlware = require("webpack-hot-middleware")(
-  compiler,
-  config.devServer
-)
+  const webpackDevMiddleware = require("webpack-dev-middleware")(
+    compiler,
+    config.devServer
+  )
 
-server.use(webpackDevMiddleware)
-server.use(webpackHotMiddlware)
-console.log("Middleware enabled")
+  const webpackHotMiddlware = require("webpack-hot-middleware")(
+    compiler,
+    config.devServer
+  )
+
+  server.use(webpackDevMiddleware)
+  server.use(webpackHotMiddlware)
+  console.log("Middleware enabled")
+}
 
 const staticMiddleware = express.static("dist")
 server.use(staticMiddleware)
