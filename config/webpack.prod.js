@@ -4,10 +4,15 @@ const HTMLWebpackPlugin = require("html-webpack-plugin")
 const OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin")
 const isProd = process.env.NODE_ENV === "production"
 const MiniCSSExtractPlugin = require("mini-css-extract-plugin")
+const MinifyPlugin = require('babel-minify-webpack-plugin');
+const CompressionPlugin = require('compression-webpack-plugin');
+const BrotliPlugin = require('brotli-webpack-plugin');
 
 module.exports = {
   entry: {
-    main: ["./src/main.js"]
+    main: [
+      "./src/main.js"
+    ]
   },
   mode: "production",
   output: {
@@ -72,6 +77,16 @@ module.exports = {
       template: "./src/index.ejs",
       inject: true,
       title: "Link's Journal"
-    })
+    }),
+    new webpack.DefinePlugin({
+      'process.env': {
+        'NODE_ENV': JSON.stringify('production')
+      }
+    }),
+    new MinifyPlugin(),
+    new CompressionPlugin({
+      algorithm: 'gzip'
+    }),
+    new BrotliPlugin()
   ]
 }
